@@ -13,7 +13,12 @@
 
     <link rel="stylesheet" href="{% static 'css\master.css'%}">
 
-    
+    <!-- Add custom CSS to enable hover effect on dropdown -->
+    <style>
+        .dropdown:hover>.dropdown-menu {
+            display: block;
+        }
+    </style>
 
 </head>
 <body>
@@ -21,7 +26,8 @@
         <div class="container-fluid px-5">
             <!-- Logo -->
             <a class="navbar-brand" href="{% url 'index' %}">
-                <img class='img-fluid' src="{% static 'images/logo-holder.jpg' %}" alt="Logo" style="max-height: 70px;">
+                {% comment %} <img class='img-fluid' src="{% static 'images/logo-holder.jpg' %}" alt="Logo" style="max-height: 70px;"> {% endcomment %}
+                <img class='img-fluid' src="https://res.cloudinary.com/dpmhx7k6y/image/upload/v1684286625/PleaseHelp/xmtfivw54fz9y9s2d4ge.jpg" alt="Logo" style="max-height: 70px;">
             </a>
 
             <!-- Toggler/collapsible Button -->
@@ -32,6 +38,9 @@
             <!-- Links -->
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-light" href="{% url 'index' %}">Home</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-light" href="#">Help</a>
                     </li>
@@ -52,9 +61,25 @@
                     <li class="nav-item">
                         <a class="nav-link btn btn-light" href="{% url 'orders:order-list' %}">Orders</a>
                     </li>
-                    <li class="nav-item mx-3" >
+                    <li class="nav-item mx-3 text-center" >
+                        <a  href="{% url 'accounts:profile' request.user.username %}">
+                            <img src="{{ request.user.avatar }}" class="rounded-circle" alt="User Avatar" width="50" height="50">
+                        </a>
+                    </li>
+                    <li class="nav-item" >
                         <a class="nav-link btn btn-outline-danger rounded-pill px-3" href="{% url 'accounts:logout' %}">Logout</a>
                     </li>
+                    <!-- User Dropdown -->
+                    {% comment %} <li class="nav-item dropdown mx-3">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ request.user.avatar }}" class="rounded-circle" alt="User Avatar" width="30" height="30">
+                        </a>
+                        <ul class="dropdown-menu" style="max-width: 10px; background-color: transparent;" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' request.user.id %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
+                        </ul>
+                    </li> {% endcomment %}
                     {% endif %}
                 </ul>
             </div>
@@ -73,4 +98,4 @@
     {% endblock %}
     </div>
 </body>
-</html>    
+</html>

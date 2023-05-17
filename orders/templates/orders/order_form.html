@@ -1,12 +1,21 @@
 {% extends 'base.html' %}
 {% load widget_tweaks %}
+{% load static %}
 {% block content %}
+<!-- Add jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Add Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- Add Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-6">
         <div class="card">
           <div class="card-header text-center">
-            <h3 class="mb-0">{{ form.instance.id|default_if_none:"New" }} Order</h3>
+            <h3 class="mb-0">{{ form.instance.order_name|default_if_none:"New" }} Order</h3>
           </div>
           <div class="card-body">
             <form method="post">
@@ -32,4 +41,87 @@
       </div>
     </div>
   </div>
+  <script>
+    //$(document).ready(function() {
+      // Initialize Select2 with the `tags` option set to true
+      //$('#id_type').select2({
+        //tags: true,
+        //tokenSeparators: [',', ' ']
+      //});
+    //});
+
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+          if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+          }
+      }
+  });
+  
+  function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = jQuery.trim(cookies[i]);
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+
+  
+    $(document).ready(function() {
+      // Initialize Select2 with the `tags` option set to true
+      $('#id_type').select2({
+        tags: true,
+        ajax: {
+            url: "{% url 'orders:order-type-autocomplete' %}",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term
+                    page: params.page
+                };
+            },
+            processResults: function (data) {
+              return {
+                  results: data.results
+              };
+          },
+          
+            cache: true
+        },
+        minimumInputLength: 0,
+        createTag: function(params) {
+            var term = $.trim(params.term);
+            if (term === '') {
+                return null;
+            }
+            return {
+                id: term,
+                text: term,
+                newOption: true
+            }
+        },
+    }).on('select2:selecting', function(e) {
+        var $select = $(this);
+        var isNew = e.params.args.data.newOption;
+        if (isNew) {
+            e.preventDefault();
+            $.post('{% url 'orders:order-type-autocomplete' %}', {text: e.params.args.data.id})
+                .done(function(data) {
+                  var newOption = new Option(data.text, data.id, false, true);
+                  $select.append(newOption).trigger('change');
+            });
+        }
+    });
+    
+    });
+    
+  </script>
 {% endblock %}
