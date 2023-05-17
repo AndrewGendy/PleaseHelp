@@ -1,5 +1,5 @@
 from django.db import models
-from accounts.models import User
+from django.conf import settings
 
 # Create your models here.
 
@@ -31,9 +31,9 @@ class Order(models.Model):
     difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES)
     address = models.CharField(max_length=200)
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
-    location = models.CharField(max_length=200)
-    client = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name='client_orders')
-    vendor = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='vendor_orders')
+    location = models.CharField(max_length=200, null=True, blank=True)
+    client = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, related_name='client_orders')
+    vendor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name='vendor_orders')
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     special_requests = models.TextField(null=True, blank=True)

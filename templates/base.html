@@ -33,10 +33,10 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Help</a>
+                        <a class="nav-link btn btn-light" href="#">Help</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
+                        <a class="nav-link btn btn-light" href="#">About</a>
                     </li>
                     {% if not request.user.is_authenticated %}
                     <li class="nav-item mx-3">
@@ -47,19 +47,20 @@
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">New Order</a>
+                        <a class="nav-link btn btn-light" href="{% url 'orders:order-create' %}">New Order</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Orders</a>
+                        <a class="nav-link btn btn-light" href="{% url 'orders:order-list' %}">Orders</a>
                     </li>
-                    <li class="nav-item" style="margin-left: 30px;">
-                        <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+                    <li class="nav-item mx-3" >
+                        <a class="nav-link btn btn-outline-danger rounded-pill px-3" href="{% url 'accounts:logout' %}">Logout</a>
                     </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
+    <div class="container m-4 p-4">
     {% if messages %}
     <ul class="messages">
         {% for message in messages %}
@@ -67,8 +68,9 @@
         {% endfor %}
     </ul>
     {% endif %}
-
+    
     {% block content %}
     {% endblock %}
+    </div>
 </body>
 </html>    

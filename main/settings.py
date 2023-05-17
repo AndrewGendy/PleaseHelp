@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "debug_toolbar",
+    'rest_framework',
+    'widget_tweaks',
+    'djoser',
     "accounts",
     "orders",
 ]
@@ -141,7 +144,19 @@ STATICFILES_DIRS = (BASE_DIR / 'static',)
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
+AUTH_USER_MODEL = "accounts.User"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),   
+}
+
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ('JWT',),
+}
 
 LOGIN_REQUIRED_URL = "accounts/login"
 LOGIN_REDIRECT_URL = "index"
