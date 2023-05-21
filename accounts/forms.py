@@ -1,3 +1,4 @@
+from django import forms
 from django.forms import ModelForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
@@ -19,4 +20,8 @@ class UserSignupForm(UserCreationForm):
 class UserProfileForm(ModelForm):
     class Meta:
         model = get_user_model()
-        fields = ['email', 'phone', 'address', 'avatar', 'user_type', 'payment_method']
+        fields = ['first_name', 'last_name', 'email', 'address', 'phone']
+
+class AvatarForm(forms.Form):
+    avatar = forms.ImageField(required=False)
+

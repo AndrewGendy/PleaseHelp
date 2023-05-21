@@ -17,6 +17,11 @@
                 <li class="list-group-item"><strong>Address:</strong> {{ order.address }}</li>
                 <li class="list-group-item"><strong>Location:</strong> {{ order.location }}</li>
                 <li class="list-group-item"><strong>Client:</strong> <a href="{% url 'accounts:profile' order.client.username %}">@{{ order.client }}</a></li>
+                {% if order.vendor and order.vendor.username %}
+                    <li class="list-group-item"><strong>Vendor:</strong> <a href="{% url 'accounts:profile' order.vendor.username %}">@{{ order.vendor }}</a></li>
+                {% else %}
+                    <li class="list-group-item"><strong>Vendor:</strong> Not assigned</li>
+                {% endif %}
                 <li class="list-group-item"><strong>Special Requests:</strong> {{ order.special_requests }}</li>
                 <li class="list-group-item"><strong>Additional Information:</strong> {{ order.additional_info }}</li>
                 {% if user == order.client %}
@@ -29,12 +34,17 @@
             <div class="d-flex justify-content-between align-items-center px-5">
                 <div class="card-text"><small class="text-muted"><strong>Last Updated: </strong> {{ order.updated_date|date:"M d, Y: h:i A" }}</small></div>
                 <div class="card-text"><small class="text-muted"><strong>Created: </strong> {{ order.created_date|date:"M d, Y: h:i A" }}</small></div>
-            </div> 
+            </div>
             <div class="text-center">
             {% if user == order.client %}
                 <a href="{% url 'orders:order-update' order.id %}" class="btn btn-dark mt-2">Update Order Information</a>
+            {% elif request.user.is_vendor and order.status.name == 'Listed' %}
+                <form method="POST" action="{% url 'orders:accept-order' order.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Accept Order</button>
+                </form>
             {% endif %}
-            </div>     
+            </div>
         </div>
     </div>
 </div>

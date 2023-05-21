@@ -4,9 +4,11 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView
+from django.views import View
+from django.http import JsonResponse
 from . import forms
+import cloudinary.uploader
 from django.contrib import messages
-
 
 # Create your views here.
 
@@ -29,7 +31,7 @@ class RegisterView(CreateView):
             for e in error:
                 messages.error(self.request, f"{field}: {str(e)}")
         return response
-    
+
 
 class UserProfileView(TemplateView):
     template_name = 'accounts/profile.html'
@@ -42,11 +44,34 @@ class UserProfileView(TemplateView):
 class UserProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = get_user_model()
     form_class = forms.UserProfileForm
-    template_name = 'account/profile.html'
-    success_url = reverse_lazy('profile')
+    template_name = 'accounts/profile_update.html'
+
+    def get_success_url(self):
+        return reverse_lazy('accounts:profile', kwargs={'username': self.request.user.username})
 
     def get_object(self):
         return get_object_or_404(get_user_model(), username=self.kwargs['username'])
 
     def test_func(self):
         return self.get_object() == self.request.user
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+class ChangeAvatarView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        form = forms.AvatarForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data.get('avatar')
+            if image is not None:
+                user_folder = f'PleaseHelp/UserProfiles/{request.user.username}'
+                upload_result = cloudinary.uploader.upload(image, folder=user_folder)
+                request.user.avatar = upload_result['url']
+                request.user.save()
+                return JsonResponse({'status': 'success', 'avatar_url': upload_result['url']})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'No image provided'}, status=400)
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Invalid form'}, status=400)
+        

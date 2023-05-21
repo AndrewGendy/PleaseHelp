@@ -20,6 +20,7 @@
                     <p class="text-center"><strong>First Name:</strong> {{ profile.first_name }}</p>
                     <p class="text-center"><strong>Last Name:</strong> {{ profile.last_name }}</p>
                     <p class="text-center"><strong>Email:</strong> {{ profile.email }}</p>
+                    <p class="text-center"><strong>Phone:</strong> {{ profile.phone }}</p>
                     <p class="text-center"><strong>User Type:</strong> {{ profile.user_type }}</p>
                     <p class="text-center"><strong>Rating:</strong> {{ profile.rating }}</p>
                     <hr>
@@ -29,7 +30,7 @@
                     </div> 
                     {% if user == profile %}
                     <div class="mb-3 text-center">
-                        <a href="{% url 'accounts:profile-update' profile.pk %}" class="btn btn-dark mt-2">Update Profile</a>
+                        <a href="{% url 'accounts:profile-update' profile.username %}" class="btn btn-dark mt-2">Update Profile</a>
                     {% endif %}
                     </div>    
                 </div>

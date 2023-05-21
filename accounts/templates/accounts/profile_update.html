@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+
+
+<style>
+
+    .image-upload {
+        position: relative;
+    }
+    
+    .image-overlay:hover .overlay-text {
+        display: block;
+    }
+    
+    .overlay-text {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 20px;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header text-center">
+            <h3 class="mb-0">Update Profile</h3>
+          </div>
+          <div class="card-body">
+            <div class="image-upload text-center">
+                <label for="file-input">
+                    <div class="image-overlay">
+                        <img src="{{ object.avatar }}" class="profile-avatar" alt="Profile Avatar" width="150" height="150">
+                        <div class="overlay-text">Change Picture</div>
+                    </div>
+                </label>
+                <input id="file-input" type="file" name="avatar" style="display: none;" />
+            </div>
+
+            <h2 class="text-center mb-5">@{{ object.username }}</h2>
+            <form method="post">
+              {% csrf_token %}
+              {% for field in form %}
+                <div class="form-group m-2">
+                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field|add_class:"form-control" }}
+                  {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                  {% endif %}
+                  {% for error in field.errors %}
+                    <div class="alert alert-danger mt-2">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+              <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){
+      $('#file-input').change(function(){
+          const formData = new FormData();
+          formData.append('avatar', this.files[0]);
+          formData.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
+  
+          $.ajax({
+              url: '{% url "accounts:change-avatar" username=request.user.username %}',
+              type: 'POST',
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function(response) {
+                  if (response.status === 'success') {
+                      $('.profile-avatar').attr('src', response.avatar_url);
+                  } else {
+                      alert(response.message);
+                  }
+              },
+              error: function(xhr, status, error) {
+                  alert('Error updating avatar: ' + xhr.responseText);
+              }
+          });
+      });
+  });
+  </script>
+
+{% endblock content %}

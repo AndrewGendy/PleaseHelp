@@ -1,5 +1,5 @@
 from django import forms
-from .models import Order, OrderType, OrderDifficulty
+from .models import Order, OrderType
 from dal import autocomplete
 
 
@@ -22,13 +22,16 @@ class OrderForm(forms.ModelForm):
             "type",
             "location",
             "special_requests",
+            "additional_info",
         ]
         widgets = {
             "order_name": forms.TextInput(attrs={'class': 'form-control'}),
             "description": forms.Textarea(attrs={'class': 'form-control'}),
             "address": forms.TextInput(attrs={'class': 'form-control'}),
+            "type": forms.TextInput(attrs={'class': 'form-control'}),
             "location": forms.TextInput(attrs={'class': 'form-control'}),
             "special_requests": forms.Textarea(attrs={'class': 'form-control'}),
+            "additional_info": forms.Textarea(attrs={'class': 'form-control'}),
         }
 
 

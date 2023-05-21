@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import cloudinary
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,13 +23,19 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+load_dotenv()
+
+cloudinary.config(
+    cloud_name = os.environ['CLOUDINARY_CLOUD_NAME'], 
+    api_key = os.environ['CLOUDINARY_API_KEY'], 
+    api_secret = os.environ['CLOUDINARY_API_SECRET'],
+    secure = True
+)
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-62wypm56o^l$c@2f6r!f^!(n(8fc9g$j5p-a#foxc41gq)dd(%"
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-# ALLOWED_HOSTS = ['pleasehelp-v1.herokuapp.com']
+DEBUG = os.environ.get('DEBUG') == 'True'
 
 
 # Application definition
@@ -83,12 +92,6 @@ WSGI_APPLICATION = "main.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
 
 DATABASES = {
     'default': {
@@ -146,6 +149,10 @@ STATICFILES_DIRS = (BASE_DIR / 'static',)
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
+
+ALLOWED_HOSTS = ['*']
+
+
 AUTH_USER_MODEL = "accounts.User"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -167,3 +174,4 @@ LOGOUT_REDIRECT_URL = "index"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
