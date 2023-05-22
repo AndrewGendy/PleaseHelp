@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 ORDER_DETAIL_PAGE = 'orders:order-detail'
 
-class OrderTypeAutocomplete(autocomplete.Select2QuerySetView):
+class OrderTypeAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = OrderType.objects.all()
         if self.q:
@@ -33,7 +33,7 @@ class OrderTypeAutocomplete(autocomplete.Select2QuerySetView):
         return JsonResponse({}, status=400)
 
 
-class OrderListView(ListView):
+class OrderListView(LoginRequiredMixin, ListView):
     model = Order
     template_name = 'orders/order_list.html' 
     context_object_name = 'order_list' 
@@ -49,7 +49,7 @@ class OrderListView(ListView):
         return queryset
 
 
-class OrderDetailView(DetailView):
+class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
     template_name = 'orders/order_detail.html' 
     context_object_name = 'order'
@@ -67,7 +67,7 @@ class OrderCreateView(CreateView):
         return reverse_lazy(ORDER_DETAIL_PAGE, kwargs={'pk': self.object.pk})
 
 
-class OrderUpdateView(UpdateView):
+class OrderUpdateView(LoginRequiredMixin, UpdateView):
     model = Order
     form_class = OrderForm
     template_name = 'orders/order_form.html'
@@ -75,7 +75,7 @@ class OrderUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy(ORDER_DETAIL_PAGE, kwargs={'pk': self.object.pk})
 
-class OrderDeleteView(DeleteView):
+class OrderDeleteView(LoginRequiredMixin, DeleteView):
     model = Order
 
 
