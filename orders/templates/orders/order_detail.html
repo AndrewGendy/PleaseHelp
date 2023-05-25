@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="container my-5">
+<div class="container">
     <div class="card">
         <div class="card-header text-center">
             <h3>{{ order.order_name }}</h3>
@@ -31,18 +31,37 @@
                 {% endif %}
             </ul>
             <hr>
-            <div class="d-flex justify-content-between align-items-center px-5">
-                <div class="card-text"><small class="text-muted"><strong>Last Updated: </strong> {{ order.updated_date|date:"M d, Y: h:i A" }}</small></div>
-                <div class="card-text"><small class="text-muted"><strong>Created: </strong> {{ order.created_date|date:"M d, Y: h:i A" }}</small></div>
-            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="card-text mx-3">
+                    <small class="text-muted">
+                        <strong>Last Updated: </strong>
+                        <span style="white-space: nowrap;">{{ order.updated_date|date:"M d, Y: h:i A" }}</span>
+                    </small>
+                </div>
+                <div class="card-text mx-3">
+                    <small class="text-muted">
+                        <strong>Created: </strong>
+                        <span style="white-space: nowrap;">{{ order.created_date|date:"M d, Y: h:i A" }}</span>
+                    </small>
+                </div>
+            </div>            
             <div class="text-center">
-            {% if user == order.client %}
+            {% if user == order.client and order.status.id <= 40 %}
                 <a href="{% url 'orders:order-update' order.id %}" class="btn btn-dark mt-2">Update Order Information</a>
-            {% elif request.user.is_vendor and order.status.name == 'Listed' %}
+            {% elif request.user.is_vendor and order.status.id == 40 %}
                 <form method="POST" action="{% url 'orders:accept-order' order.id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary">Accept Order</button>
                 </form>
+            {% endif %}
+            {% if order.status.id >= 60 %}
+                <div class="text-center mt-4">
+                    {% if feedback_submitted %}
+                        <span class="text-muted">Feedback Submitted.</span>
+                    {% else %}
+                        <a href="{% url 'feedback:feedback_new' order.pk %}" class="btn btn-primary">Give Feedback</a>
+                    {% endif %}
+                </div>
             {% endif %}
             </div>
         </div>

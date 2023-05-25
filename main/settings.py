@@ -47,14 +47,17 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "debug_toolbar",
+    "debug_toolbar", 
     "rest_framework",
     "widget_tweaks",
     "djoser",
-    "dal",
-    "dal_select2",
+    "dal", # pre-fetch and autocomplete
+    "dal_select2", # pre-fetch and autocomplete
     "accounts",
     "orders",
+    "feedback",
+    "chat_messages_system",
+
 ]
 
 MIDDLEWARE = [
@@ -144,6 +147,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_DIR = BASE_DIR / "static"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (BASE_DIR / 'static',)

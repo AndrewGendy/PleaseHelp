@@ -5,7 +5,7 @@
     <div class="row">
         {% for order in order_list %}
             <div class="col-md-4">
-                <div class="card my-3">
+                <div class="card">
                     <div class="card-body">
                         <h3 class="card-title">
                             <a href="{% url 'orders:order-detail' order.id %}">{{ order.order_name }}</a>

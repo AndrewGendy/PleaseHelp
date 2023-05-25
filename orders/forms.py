@@ -8,7 +8,7 @@ class OrderForm(forms.ModelForm):
         queryset=OrderType.objects.all(),
         widget=autocomplete.ModelSelect2(
             url='orders/order-type-autocomplete',
-            attrs={'data-minimum-input-length': 0},  # optional, to remove the need to type before seeing options
+            attrs={'data-minimum-input-length': 1},  # optional, to make it requre one character before seeing options
         ),
     )
 

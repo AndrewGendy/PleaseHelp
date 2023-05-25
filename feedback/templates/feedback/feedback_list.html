@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+  <style>
+    .fas.fa-star {
+      color: goldenrod;
+    }
+    .far.fa-star {
+      color: grey;
+    }
+  </style>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1 class="my-4">My Feedbacks</h1>
+      </div>
+      {% for feedback in feedbacks %}
+        <div class="col-md-6 col-lg-4 my-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">From: <a href="{% url 'accounts:profile' feedback.reviewer.username %}">{{ feedback.reviewer.username }}</a></h5>
+              <h6 class="card-subtitle mb-2 text-muted">{{ feedback.created_at|date:"F j, Y" }}</h6>
+              <div>
+                {% for _ in "12345"|make_list %}
+                    <i class="fa fa-star{% if forloop.counter <= feedback.rating %} fas{% else %} far{% endif %}"></i>
+                {% endfor %}
+              </div>
+              <p class="card-text">{{ feedback.comment }}</p>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <p>You haven't received any feedback yet.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock %}

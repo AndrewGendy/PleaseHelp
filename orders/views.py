@@ -8,6 +8,7 @@ from .forms import OrderForm
 from django.http import JsonResponse
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
+from feedback.models import Feedback
 
 
 ORDER_DETAIL_PAGE = 'orders:order-detail'
@@ -45,7 +46,7 @@ class OrderListView(LoginRequiredMixin, ListView):
             if self.request.user.is_client():
                 queryset = queryset.filter(client=self.request.user)
             elif self.request.user.is_vendor():
-                queryset = queryset.filter(Q(vendor=self.request.user) | Q(client=self.request.user) | Q(status=4))
+                queryset = queryset.filter(Q(vendor=self.request.user) | Q(client=self.request.user) | Q(status=OrderStatus.objects.get(name='Listed')))
         return queryset
 
 
@@ -53,6 +54,13 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
     template_name = 'orders/order_detail.html' 
     context_object_name = 'order'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        feedbacks = Feedback.objects.filter(order=self.object, reviewer=self.request.user)
+        context['feedback_submitted'] = feedbacks.exists()
+        return context
+    
 
 class OrderCreateView(CreateView):
     model = Order
@@ -72,6 +80,11 @@ class OrderUpdateView(LoginRequiredMixin, UpdateView):
     form_class = OrderForm
     template_name = 'orders/order_form.html'
     
+    def form_valid(self, form):
+        order = form.instance
+        order.status = OrderStatus.objects.get(pk=11)
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse_lazy(ORDER_DETAIL_PAGE, kwargs={'pk': self.object.pk})
 

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block content %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header text-center">
+            <h3 class="mb-0">{{ form.instance.pk|default_if_none:"New" }} Feedback</h3>
+          </div>
+          <div class="card-body">
+            <form id="feedback-form" method="post">
+              {% csrf_token %}
+              <div class="alert alert-danger mt-2" id="rating-error" style="display: none;">Please select your rating.</div>
+              {% for field in form %}
+                <div class="form-group m-2">
+                    {% if field.label != "Rating" %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field|add_class:"form-control" }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger mt-2">{{ error }}</div>
+                    {% endfor %}
+                    {% else %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <div id="star-rating">
+                        <i class="far fa-star fa-lg" data-rating="1"></i>
+                        <i class="far fa-star fa-lg" data-rating="2"></i>
+                        <i class="far fa-star fa-lg" data-rating="3"></i>
+                        <i class="far fa-star fa-lg" data-rating="4"></i>
+                        <i class="far fa-star fa-lg" data-rating="5"></i>
+                    </div>
+                    <input type="hidden" id="rating" name="rating" value="{% if field.value %}{{ field.value }}{% endif %}">
+                    {% endif %}
+                </div>
+                {% endfor %}
+              <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<style>
+  .fas.fa-star {
+    color: goldenrod;
+}
+.far.fa-star {
+    color: grey;
+}
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    //console.log('Document ready');
+
+    $('#star-rating i').on('click', function() {
+        var rating = $(this).data('rating');
+        //console.log('Rating clicked:', rating);
+        $('#rating').val(rating);
+        $('#star-rating i').each(function() {
+            if ($(this).data('rating') <= rating) {
+                $(this).removeClass('far').addClass('fas');
+            } else {
+                $(this).removeClass('fas').addClass('far');
+            }
+        });
+    });
+
+    $('#feedback-form').on('submit', function(e) {
+        //console.log('Form submitted');
+        if ($('#rating').val() === '') {
+            console.log('No rating selected');
+            $('#rating-error').show();
+            e.preventDefault();
+        } else {
+            //console.log('Rating selected:', $('#rating').val());
+            $('#rating-error').hide();
+        }
+    });
+});
+</script>
+
+
+{% endblock %}
