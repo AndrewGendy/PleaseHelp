@@ -16,3 +16,14 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f'Feedback for Order {self.order.order_name} - {self.created_at}'
+    
+
+    def save(self, *args, **kwargs):
+        super(Feedback, self).save(*args, **kwargs)
+
+        reviewed_user = self.reviewed
+        feedbacks = Feedback.objects.filter(reviewed=reviewed_user)
+        total_rating = sum(feedback.rating for feedback in feedbacks)
+        rating = total_rating / len(feedbacks) if feedbacks else 5
+        reviewed_user.rating = rating
+        reviewed_user.save()

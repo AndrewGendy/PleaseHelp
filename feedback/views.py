@@ -11,7 +11,7 @@ from django.core.exceptions import PermissionDenied
 class FeedbackCreateView(CreateView):
     model = Feedback
     form_class = FeedbackForm
-    template_name = 'feedback/feedback_form.html'  # replace with your template
+    template_name = 'feedback/feedback_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         order = get_object_or_404(Order, id=kwargs['order_pk'])
@@ -28,13 +28,11 @@ class FeedbackCreateView(CreateView):
         else:
             feedback.reviewed = feedback.order.client
 
-        feedback.reviewed.add_rating(feedback.rating)
-        
         feedback.save()
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('feedback:feedback_success')  # replace with your success url
+        return reverse_lazy('feedback:feedback_success')
 
 
 
