@@ -1,24 +1,22 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
-
-<div class="container">
-    <div class="row">
-        {% for order in order_list %}
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h3 class="card-title">
-                            <a href="{% url 'orders:order-detail' order.id %}">{{ order.order_name }}</a>
-                        </h3>
-                        <p class="card-text">{{ order.description|truncatechars:50 }}</p>
-                        <p class="card-text">Status: {{ order.status }}</p>
-                        <p class="card-text">Type: {{ order.type }}</p>
-                        <p class="card-subtitle mb-2 text-muted">{{ order.updated_date|date:"M d, Y: h:i A" }}</p>
+    <div class="container">
+        <div class="row">
+            {% for order in order_list %}
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                                <a href="{% url 'orders:order-detail' order.id %}">{{ order.order_name }}</a>
+                            </h3>
+                            <p class="card-text">{{ order.description|truncatechars:50 }}</p>
+                            <p class="card-text">Status: {{ order.status }}</p>
+                            <p class="card-text">Type: {{ order.type }}</p>
+                            <p class="card-subtitle mb-2 text-muted">{{ order.updated_date|date:"M d, Y: h:i A" }}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-</div>
-
-{% endblock %}
+{% endblock content %}

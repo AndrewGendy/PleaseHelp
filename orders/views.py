@@ -9,7 +9,7 @@ from .models import Order, OrderType, OrderStatus
 from .forms import OrderForm
 from django.http import JsonResponse
 from django.db.models import Q
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from feedback.models import Feedback
 
 
@@ -54,10 +54,16 @@ class OrderListView(LoginRequiredMixin, ListView):
         return queryset
 
 
-class OrderDetailView(LoginRequiredMixin, DetailView):
+class OrderDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Order
     template_name = "orders/order_detail.html"
     context_object_name = "order"
+
+    def test_func(self):
+        order = self.get_object()
+        user = self.request.user
+        # Check if the user is the client or the vendor of the order
+        return user == order.client or user == order.vendor or user.user_type.pk >= 30
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
