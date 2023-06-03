@@ -1,71 +1,188 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
+  <style>
+.form-control-smaller {
+  width: 80%; /* Adjust the width as needed */
+  padding: 6px 12px; /* Adjust the padding as needed */
+  font-size: 14px; /* Adjust the font size as needed */
+}
 
-<div class="container">
+  </style>
+  <div class="container">
     <div class="card">
-        <div class="card-header text-center">
-            <h3>{{ order.order_name }}</h3>
+      <div class="card-header text-center">
+        <h3>{{ order.order_name }}</h3>
+      </div>
+      <div class="card-body">
+        <p class="card-text">
+          <strong>Description:</strong>{{ order.description }}
+        </p>
+        <hr />
+        <h5 class="card-title">
+          <u><b>Details</b></u>
+        </h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <strong>Status:</strong> {{ order.status }}
+          </li>
+          <li class="list-group-item">
+            <strong>Type:</strong> {{ order.type }}
+          </li>
+          <li class="list-group-item">
+            <strong>Difficulty:</strong> {{ order.difficulty }}
+          </li>
+          <li class="list-group-item">
+            <strong>Address:</strong> {{ order.address }}
+          </li>
+          <li class="list-group-item">
+            <strong>Location:</strong> {{ order.location }}
+          </li>
+          <li class="list-group-item">
+            <strong>Client:</strong>
+            <a href="{% url 'accounts:profile' order.client.username %}">@{{ order.client }}</a>
+          </li>
+          {% if order.vendor and order.vendor.username %}
+            <li class="list-group-item">
+              <strong>Vendor:</strong>
+              <a href="{% url 'accounts:profile' order.vendor.username %}">@{{ order.vendor }}</a>
+            </li>
+          {% else %}
+            <li class="list-group-item">
+              <strong>Vendor:</strong> Not assigned
+            </li>
+          {% endif %}
+          <li class="list-group-item">
+            <strong>Special Requests:</strong> {{ order.special_requests }}
+          </li>
+          <li class="list-group-item">
+            <strong>Additional Information:</strong> {{ order.additional_info }}
+          </li>
+          {% if user == order.client %}
+            <li class="list-group-item">
+              <strong>Price:</strong> {{ order.client_price }}
+            </li>
+          {% elif user.user_type.pk == 20 %}
+            <li class="list-group-item">
+              <strong>Price:</strong> {{ order.vendor_price }}
+            </li>
+          {% endif %}
+          <!-- For staff members to add/edit prices -->
+          {% if user.user_type.pk >= 40 and user != order.client and user != order.vendor %}
+            {% if client_price_change %}
+              <form method="POST" action="{% url 'orders:order-update-price' order.id %}">
+                {% csrf_token %}
+                <div class="m-3 d-flex align-items-center">
+                  <div class="text-center mt-1">
+                    <label for="client_price" class="form-label">
+                      <b>Client Price:</b>
+                    </label>
+                  </div>
+                  <div class="text-center mx-2">
+                    <input type="number"
+                           id="client_price"
+                           name="client_price"
+                           class="form-control form-control-smaller"
+                           value="{{ order.client_price|default_if_none:'10.00' }}"
+                           min="10"
+                           onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 109;">
+                  </div>
+                  <div class="text-center mx-2">
+                    <input type="submit" value="Update Client Price" class="btn btn-primary">
+                  </div>
+                </div>
+              </form>
+            {% else %}
+              <li class="list-group-item">
+                <strong>Client Price:</strong> {{ order.client_price }}
+              </li>
+            {% endif %}
+            {% if vendor_price_change %}
+              <form method="POST" action="{% url 'orders:order-update-price' order.id %}">
+                {% csrf_token %}
+                <div class="m-3 d-flex align-items-center">
+                  <div class="text-center mt-1">
+                    <label for="vendor_price" class="form-label">
+                      <b>Vendor Price:</b>
+                    </label>
+                  </div>
+                  <div class="text-center mx-2">
+                    <input type="number"
+                           id="vendor_price"
+                           name="vendor_price"
+                           class="form-control from-control-sm"
+                           value="{{ order.vendor_price|default_if_none:'10.00' }}"
+                           min="10"
+                           onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 109;">
+                  </div>
+                  <div class="text-center mx-2">
+                    <input type="submit" value="Update Vendor Price" class="btn btn-primary">
+                  </div>
+                </div>
+              </form>
+            {% else %}
+              <li class="list-group-item">
+                <strong>Vendor Price:</strong> {{ order.vendor_price }}
+              </li>
+            {% endif %}
+          {% endif %}
+        </ul>
+        <hr />
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="card-text mx-3">
+            <small class="text-muted">
+              <strong>Last Updated:</strong>
+              <span style="white-space: nowrap">{{ order.updated_date|date:"M d, Y: h:i A" }}</span>
+            </small>
+          </div>
+          <div class="card-text mx-3">
+            <small class="text-muted">
+              <strong>Created:</strong>
+              <span style="white-space: nowrap">{{ order.created_date|date:"M d, Y: h:i A" }}</span>
+            </small>
+          </div>
         </div>
-        <div class="card-body">
-            <p class="card-text"><strong>Description: </strong>{{ order.description }}</p>
-            <hr>
-            <h5 class="card-title"><u><b>Details</b></u></h5>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Status:</strong> {{ order.status }}</li>
-                <li class="list-group-item"><strong>Type:</strong> {{ order.type }}</li>
-                <li class="list-group-item"><strong>Difficulty:</strong> {{ order.difficulty }}</li>
-                <li class="list-group-item"><strong>Address:</strong> {{ order.address }}</li>
-                <li class="list-group-item"><strong>Location:</strong> {{ order.location }}</li>
-                <li class="list-group-item"><strong>Client:</strong> <a href="{% url 'accounts:profile' order.client.username %}">@{{ order.client }}</a></li>
-                {% if order.vendor and order.vendor.username %}
-                    <li class="list-group-item"><strong>Vendor:</strong> <a href="{% url 'accounts:profile' order.vendor.username %}">@{{ order.vendor }}</a></li>
+        <div class="text-center">
+          {% if request.user.is_client and order.status.pk == 20 %}
+            <form method="POST"
+                  action="{% url 'orders:client-accept-price' order.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Confirm Order and Accept Price</button>
+            </form>
+          {% endif %}
+          {% if order.status.pk <= 40 and user == order.client %}
+            <a href="{% url 'orders:order-update' order.id %}"
+               class="btn btn-dark mt-2">Update Order Information</a>
+          {% elif request.user.is_vendor and order.status.pk == 40 %}
+            <form method="POST"
+                  action="{% url 'orders:vendor-accept-order' order.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Accept Order</button>
+            </form>
+          {% endif %}
+          {% if order.status.pk >= 60 %}
+            <div class="text-center mt-4">
+              {% if is_client_or_vendor %}
+                {% if feedback_submitted %}
+                  <span class="text-muted">Feedback Submitted.</span>
                 {% else %}
-                    <li class="list-group-item"><strong>Vendor:</strong> Not assigned</li>
+                  <a href="{% url 'feedback:feedback_new' order.pk %}"
+                     class="btn btn-primary">Give Feedback</a>
                 {% endif %}
-                <li class="list-group-item"><strong>Special Requests:</strong> {{ order.special_requests }}</li>
-                <li class="list-group-item"><strong>Additional Information:</strong> {{ order.additional_info }}</li>
-                {% if user == order.client %}
-                <li class="list-group-item"><strong>Price:</strong> {{ order.client_price }}</li>
-                {% else %}
-                <li class="list-group-item"><strong>Price:</strong> {{ order.vendor_price }}</li>
-                {% endif %}
-            </ul>
-            <hr>
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="card-text mx-3">
-                    <small class="text-muted">
-                        <strong>Last Updated: </strong>
-                        <span style="white-space: nowrap;">{{ order.updated_date|date:"M d, Y: h:i A" }}</span>
-                    </small>
-                </div>
-                <div class="card-text mx-3">
-                    <small class="text-muted">
-                        <strong>Created: </strong>
-                        <span style="white-space: nowrap;">{{ order.created_date|date:"M d, Y: h:i A" }}</span>
-                    </small>
-                </div>
-            </div>            
-            <div class="text-center">
-            {% if user == order.client and order.status.id <= 40 %}
-                <a href="{% url 'orders:order-update' order.id %}" class="btn btn-dark mt-2">Update Order Information</a>
-            {% elif request.user.is_vendor and order.status.id == 40 %}
-                <form method="POST" action="{% url 'orders:accept-order' order.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">Accept Order</button>
-                </form>
-            {% endif %}
-            {% if order.status.id >= 60 %}
-                <div class="text-center mt-4">
-                    {% if feedback_submitted %}
-                        <span class="text-muted">Feedback Submitted.</span>
-                    {% else %}
-                        <a href="{% url 'feedback:feedback_new' order.pk %}" class="btn btn-primary">Give Feedback</a>
-                    {% endif %}
-                </div>
-            {% endif %}
+              {% endif %}
             </div>
+          {% endif %}
         </div>
+      </div>
     </div>
-</div>
-
-{% endblock %}
+  </div>
+  <script>
+    document.querySelector('input[name="client_price"]').addEventListener('change', (event) => {
+      let value = parseFloat(event.target.value);
+      event.target.value = value.toFixed(2);
+    });
+    document.querySelector('input[name="vendor_price"]').addEventListener('change', (event) => {
+      let value = parseFloat(event.target.value);
+      event.target.value = value.toFixed(2);
+    });
+  </script>
+{% endblock content %}

@@ -1,15 +1,14 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load widget_tweaks %}
 {% load static %}
 {% block content %}
-<!-- Add jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Add Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-<!-- Add Select2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- Add jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Add Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+        rel="stylesheet" />
+  <!-- Add Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-6">
@@ -24,12 +23,8 @@
                 <div class="form-group m-2">
                   <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                   {{ field|add_class:"form-control" }}
-                  {% if field.help_text %}
-                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                  {% endif %}
-                  {% for error in field.errors %}
-                    <div class="alert alert-danger mt-2">{{ error }}</div>
-                  {% endfor %}
+                  {% if field.help_text %}<small class="form-text text-muted">{{ field.help_text }}</small>{% endif %}
+                  {% for error in field.errors %}<div class="alert alert-danger mt-2">{{ error }}</div>{% endfor %}
                 </div>
               {% endfor %}
               <div class="form-group text-center">
@@ -42,7 +37,6 @@
     </div>
   </div>
   <script>
-
     $.ajaxSetup({
       beforeSend: function(xhr, settings) {
           if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
@@ -117,4 +111,4 @@
     });
     
   </script>
-{% endblock %}
+{% endblock content %}

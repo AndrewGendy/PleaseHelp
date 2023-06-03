@@ -5,6 +5,9 @@ description = ""
 authors = ["Andrew Gendy <andrewgendy9@gmail.com>"]
 readme = "README.md"
 
+[tool.black]
+line-length = 500
+
 [tool.poetry.dependencies]
 python = "^3.10.5"
 django = "^4.2.1"
@@ -25,6 +28,7 @@ python-dotenv = "^1.0.0"
 mysql = "^0.0.3"
 channels = "^3.0.4"
 channels-redis = "^3.3.1"
+djlint = "^1.29.0"
 
 [build-system]
 requires = ["poetry-core"]
