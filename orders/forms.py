@@ -26,9 +26,9 @@ class OrderForm(forms.ModelForm):
         fields = [
             "order_name",
             "description",
-            "difficulty",
+            "order_difficulty",
             "address",
-            "type",
+            "order_type",
             "location",
             "special_requests",
             "additional_info",
