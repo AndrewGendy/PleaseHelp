@@ -63,7 +63,7 @@ class OrderDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         order = self.get_object()
         user = self.request.user
         # Check if the user is the client or the vendor of the order
-        return user == order.client or user == order.vendor or user.user_type.pk >= 30
+        return user == order.client or user == order.vendor or user.user_type.pk >= 30 or (order.status.pk == 40 and user.user_type.pk >= 20)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -119,9 +119,10 @@ class OrderUpdateView(LoginRequiredMixin, UpdateView):
         return kwargs
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.user_type.pk < 40:
-            return redirect("error_page")  # or whatever page we want to redirect non-staff members to
-        return super(OrderUpdateView, self).dispatch(request, *args, **kwargs)
+        order = get_object_or_404(Order, pk=kwargs["pk"])
+        if request.user == order.client:
+            return super(OrderUpdateView, self).dispatch(request, *args, **kwargs)
+        return redirect("error_page")  # or whatever page we want to redirect non-staff members to
 
     def get_success_url(self):
         return reverse_lazy(ORDER_DETAIL_PAGE, kwargs={"pk": self.object.pk})

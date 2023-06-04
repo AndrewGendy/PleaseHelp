@@ -17,7 +17,7 @@ class OrderForm(forms.ModelForm):
         widget=forms.TextInput(attrs={"class": "form-control", "pattern": "\d+(\.\d{2})?", "inputmode": "decimal"}),
     )
     vendor_price = forms.CharField(
-        validators=[MinValueValidator(10)],
+        validators=[MinValueValidator(5)],
         widget=forms.TextInput(attrs={"class": "form-control", "pattern": "\d+(\.\d{2})?", "inputmode": "decimal"}),
     )
 
@@ -49,6 +49,18 @@ class OrderForm(forms.ModelForm):
         type_value = self.cleaned_data["type"]
         type_obj, _ = OrderType.objects.get_or_create(name=type_value)
         return type_obj
+
+    def clean(self):
+        cleaned_data = super().clean()
+        vendor_price = cleaned_data.get("vendor_price")
+        client_price = cleaned_data.get("client_price")
+
+        if client_price is None:
+            self.add_error("Error getting Client Price", "Client Price is required")
+        elif vendor_price is not None and vendor_price >= client_price - 5:
+            self.add_error("vendor_price", "Vendor price must be at least $5 below client price")
+
+        return cleaned_data
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)

@@ -20,17 +20,14 @@ from . import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('__debug__/', include("debug_toolbar.urls")),
+    path("__debug__/", include("debug_toolbar.urls")),
     path("", views.IndexView.as_view(), name="index"),
     path("auth/", include("djoser.urls")),
-    #path("auth/", include('djoser.urls.jwt')),
-
+    # path("auth/", include('djoser.urls.jwt')),
     path("accounts/", include("accounts.urls")),
-    #path("accounts/", include("django.contrib.auth.urls")),
+    # path("accounts/", include("django.contrib.auth.urls")),
     path("orders/", include("orders.urls")),
-
     path("messages/", include("chat_messages_system.urls")),
-
     path("feedback/", include("feedback.urls")),
-
+    path("error_page", views.ErrorView.as_view(), name="error_page"),
 ]

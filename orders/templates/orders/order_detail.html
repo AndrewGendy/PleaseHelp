@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
   <style>
-.form-control-smaller {
+.form-control-smaller { /* this affects the input box for adding/updating the price */
   width: 80%; /* Adjust the width as needed */
   padding: 6px 12px; /* Adjust the padding as needed */
   font-size: 14px; /* Adjust the font size as needed */
 }
 
+.centered-title { /* this affects the title in the confirmModal */
+  text-align: center;
+  width: 100%;
+}
   </style>
   <div class="container">
     <div class="card">
@@ -82,7 +86,7 @@
                            id="client_price"
                            name="client_price"
                            class="form-control form-control-smaller"
-                           value="{{ order.client_price|default_if_none:'10.00' }}"
+                           value="{{ order.client_price|default_if_none:'0.00' }}"
                            min="10"
                            onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 109;">
                   </div>
@@ -110,7 +114,7 @@
                            id="vendor_price"
                            name="vendor_price"
                            class="form-control from-control-sm"
-                           value="{{ order.vendor_price|default_if_none:'10.00' }}"
+                           value="{{ order.vendor_price|default_if_none:'0.00' }}"
                            min="10"
                            onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 109;">
                   </div>
@@ -142,22 +146,76 @@
           </div>
         </div>
         <div class="text-center">
+          {% comment %} Accept Price with confirm Modal from Bootstrap {% endcomment %}
           {% if request.user.is_client and order.status.pk == 20 %}
-            <form method="POST"
-                  action="{% url 'orders:client-accept-price' order.id %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-primary">Confirm Order and Accept Price</button>
-            </form>
+            <button type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmModal">Confirm Order and Accept Price</button>
+            <div class="modal fade"
+                 id="confirmModal"
+                 tabindex="-1"
+                 aria-labelledby="confirmModalLabel"
+                 aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title centered-title" id="confirmModalLabel">Confirm Action</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">Are you sure you want to confirm the order and accept the price?</div>
+                  <div class="modal-footer justify-content-center">
+                    <form method="POST"
+                          action="{% url 'orders:client-accept-price' order.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-primary">Yes</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           {% endif %}
           {% if order.status.pk <= 40 and user == order.client %}
-            <a href="{% url 'orders:order-update' order.id %}"
-               class="btn btn-dark mt-2">Update Order Information</a>
+            <div>
+              <a href="{% url 'orders:order-update' order.id %}"
+                 class="btn btn-dark mt-2">Update Order Information</a>
+            </div>
+            {% comment %} Accept Order with confirm Modal from Bootstrap {% endcomment %}
           {% elif request.user.is_vendor and order.status.pk == 40 %}
-            <form method="POST"
-                  action="{% url 'orders:vendor-accept-order' order.id %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-primary">Accept Order</button>
-            </form>
+            <button type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmModal">Accept Order</button>
+            <div class="modal fade"
+                 id="confirmModal"
+                 tabindex="-1"
+                 aria-labelledby="confirmModalLabel"
+                 aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title centered-title" id="confirmModalLabel">Confirm Action</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">Are you sure you want to accept this order?</div>
+                  <div class="modal-footer justify-content-center">
+                    <form method="POST"
+                          action="{% url 'orders:vendor-accept-order' order.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-primary">Yes</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           {% endif %}
           {% if order.status.pk >= 60 %}
             <div class="text-center mt-4">
