@@ -27,13 +27,13 @@
         </h5>
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
-            <strong>Status:</strong> {{ order.status }}
+            <strong>Status:</strong> {{ order.order_status }}
           </li>
           <li class="list-group-item">
-            <strong>Type:</strong> {{ order.type }}
+            <strong>Type:</strong> {{ order.order_type }}
           </li>
           <li class="list-group-item">
-            <strong>Difficulty:</strong> {{ order.difficulty }}
+            <strong>Difficulty:</strong> {{ order.order_difficulty }}
           </li>
           <li class="list-group-item">
             <strong>Address:</strong> {{ order.address }}
@@ -63,11 +63,11 @@
           </li>
           {% if user == order.client %}
             <li class="list-group-item">
-              <strong>Price:</strong> {{ order.client_price }}
+              <strong>Price:</strong> {{ order.client_price|default_if_none:'Being Calculated' }}
             </li>
           {% elif user.user_type.pk == 20 %}
             <li class="list-group-item">
-              <strong>Price:</strong> {{ order.vendor_price }}
+              <strong>Price:</strong> {{ order.vendor_price|default_if_none:'Being Calculated' }}
             </li>
           {% endif %}
           <!-- For staff members to add/edit prices -->
@@ -166,7 +166,7 @@
                             data-bs-dismiss="modal"
                             aria-label="Close"></button>
                   </div>
-                  <div class="modal-body">Are you sure you want to confirm the order and accept the price?</div>
+                  <div class="modal-body">Are you sure you want to accept the price and confirm the order?</div>
                   <div class="modal-footer justify-content-center">
                     <form method="POST"
                           action="{% url 'orders:client-accept-price' order.id %}">
@@ -204,7 +204,9 @@
                             data-bs-dismiss="modal"
                             aria-label="Close"></button>
                   </div>
-                  <div class="modal-body">Are you sure you want to accept this order?</div>
+                  <div class="modal-body">
+                    Are you sure you want to accept this order? Make sure you read all the details especially the prefered complete date if there is one.
+                  </div>
                   <div class="modal-footer justify-content-center">
                     <form method="POST"
                           action="{% url 'orders:vendor-accept-order' order.id %}">

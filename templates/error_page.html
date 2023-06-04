@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="container">
-        <h1>Something wrong happened. Please try again later.</h1>
+    <div class="container mt-5">
+        <div class="alert alert-danger" role="alert">
+            <h3 class="alert-heading">Access Restricted</h3>
+            <p>
+                Access to this page is restricted. If you believe you've received this message in error and should have the necessary permissions to view this page, please verify your access rights.
+            </p>
+            <hr>
+            <p class="mb-0">
+                Should the issue persist, we kindly ask you to reach out to our support team for further assistance.
+            </p>
+        </div>
     </div>
 {% endblock content %}

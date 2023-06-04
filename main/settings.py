@@ -24,18 +24,19 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 load_dotenv()
+API_PROXY = os.environ.get("API_PROXY")
 
 cloudinary.config(
-    cloud_name = os.environ['CLOUDINARY_CLOUD_NAME'], 
-    api_key = os.environ['CLOUDINARY_API_KEY'], 
-    api_secret = os.environ['CLOUDINARY_API_SECRET'],
-    secure = True
+    cloud_name=os.environ["CLOUDINARY_CLOUD_NAME"],
+    api_key=os.environ["CLOUDINARY_API_KEY"],
+    api_secret=os.environ["CLOUDINARY_API_SECRET"],
+    api_proxy=API_PROXY or None,  # Use None if API_PROXY is empty or unset
 )
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG') == 'True'
+DEBUG = os.environ.get("DEBUG") == "True"
 
 
 # Application definition
@@ -47,17 +48,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "debug_toolbar", 
+    "debug_toolbar",
     "rest_framework",
     "widget_tweaks",
     "djoser",
-    "dal", # pre-fetch and autocomplete
-    "dal_select2", # pre-fetch and autocomplete
+    "dal",  # pre-fetch and autocomplete
+    "dal_select2",  # pre-fetch and autocomplete
     "accounts",
     "orders",
     "feedback",
     "chat_messages_system",
-
 ]
 
 MIDDLEWARE = [
@@ -96,18 +96,16 @@ WSGI_APPLICATION = "main.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-
-DATABASES = { #if using MySQL
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ['DB_NAME'],
-        'USER': os.environ['DB_USER'],
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': os.environ['DB_HOST'],
-        'PORT': os.environ['DB_PORT'],
+DATABASES = {  # if using MySQL
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.environ["DB_NAME"],
+        "USER": os.environ["DB_USER"],
+        "PASSWORD": os.environ["DB_PASSWORD"],
+        "HOST": os.environ["DB_HOST"],
+        "PORT": os.environ["DB_PORT"],
     }
 }
-
 
 
 # Password validation
@@ -148,17 +146,17 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_DIR = BASE_DIR / "static"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (BASE_DIR / 'static',)
+STATICFILES_DIRS = (BASE_DIR / "static",)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 AUTH_USER_MODEL = "accounts.User"
@@ -166,13 +164,11 @@ AUTH_USER_MODEL = "accounts.User"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),   
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
 }
 
 SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('JWT',),
+    "AUTH_HEADER_TYPES": ("JWT",),
 }
 
 LOGIN_REQUIRED_URL = "accounts/login"
@@ -182,4 +178,3 @@ LOGOUT_REDIRECT_URL = "index"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-

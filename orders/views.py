@@ -1,16 +1,16 @@
-from decimal import Decimal
-from django.contrib import messages
-from dal import autocomplete
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views import View
-from .models import Order, OrderType, OrderStatus
-from .forms import OrderForm
 from django.http import JsonResponse
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib import messages
+from decimal import Decimal
+from dal import autocomplete
 from feedback.models import Feedback
+from .models import Order, OrderType, OrderStatus
+from .forms import OrderForm
 
 
 ORDER_DETAIL_PAGE = "orders:order-detail"
@@ -64,6 +64,10 @@ class OrderDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         user = self.request.user
         # Check if the user is the client or the vendor of the order
         return user == order.client or user == order.vendor or user.user_type.pk >= 30 or (order.status.pk == 40 and user.user_type.pk >= 20)
+
+    def handle_no_permission(self):
+        # Redirect to the error_page if the test fails
+        return redirect("error_page")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

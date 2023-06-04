@@ -1,8 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# Create your models here.
-
 
 class UserType(models.Model):
     name = models.CharField(max_length=50)
@@ -12,6 +10,8 @@ class UserType(models.Model):
 
     class Meta:
         ordering = ["name"]
+        verbose_name = "User type"
+        verbose_name_plural = "User types"
 
 
 class User(AbstractUser):
@@ -35,6 +35,8 @@ class User(AbstractUser):
 
     class Meta:
         ordering = ["first_name", "last_name"]
+        verbose_name = "User"
+        verbose_name_plural = "Users"
 
     REQUIRED_FIELDS = ["email", "password"]
     USERNAME_FIELD = "username"
