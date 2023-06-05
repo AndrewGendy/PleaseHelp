@@ -1,5 +1,6 @@
 from django import forms
 from django.core.validators import MinValueValidator
+from django.contrib.admin.widgets import AdminDateWidget
 from .models import Order, OrderType
 from dal import autocomplete
 
@@ -21,22 +22,25 @@ class OrderForm(forms.ModelForm):
         widget=forms.TextInput(attrs={"class": "form-control", "pattern": "\d+(\.\d{2})?", "inputmode": "decimal"}),
     )
 
+    preferred_complete_date = forms.DateTimeField(widget=AdminDateWidget())
+
     class Meta:
         model = Order
         fields = [
-            "order_name",
+            "name",
             "description",
-            "order_difficulty",
+            "difficulty",
             "address",
-            "order_type",
+            "type",
             "location",
             "special_requests",
             "additional_info",
+            "preferred_complete_date",
             "client_price",
             "vendor_price",
         ]
         widgets = {
-            "order_name": forms.TextInput(attrs={"class": "form-control"}),
+            "name": forms.TextInput(attrs={"class": "form-control"}),
             "description": forms.Textarea(attrs={"class": "form-control"}),
             "address": forms.TextInput(attrs={"class": "form-control"}),
             "type": forms.TextInput(attrs={"class": "form-control"}),
@@ -49,18 +53,6 @@ class OrderForm(forms.ModelForm):
         type_value = self.cleaned_data["type"]
         type_obj, _ = OrderType.objects.get_or_create(name=type_value)
         return type_obj
-
-    def clean(self):
-        cleaned_data = super().clean()
-        vendor_price = cleaned_data.get("vendor_price")
-        client_price = cleaned_data.get("client_price")
-
-        if client_price is None:
-            self.add_error("Error getting Client Price", "Client Price is required")
-        elif vendor_price is not None and vendor_price >= client_price - 5:
-            self.add_error("vendor_price", "Vendor price must be at least $5 below client price")
-
-        return cleaned_data
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)

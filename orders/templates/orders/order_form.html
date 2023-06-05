@@ -2,19 +2,31 @@
 {% load widget_tweaks %}
 {% load static %}
 {% block content %}
-  <!-- Add jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- Add Select2 CSS -->
+  <!-- Add Django's Admin CSS and JS -->
+  <link rel="stylesheet"
+        type="text/css"
+        href="{% static 'admin/css/widgets.css' %}">
+  <script src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+  <script src="{% static 'admin/js/vendor/jquery/jquery.init.js' %}"></script>
+  <script src="{% static 'admin/js/calendar.js' %}"></script>
+  <script src="{% static 'admin/js/admin/DateTimeShortcuts.js' %}"></script>
+  <!-- Add jQuery UI -->
+  <link rel="stylesheet"
+        href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <!-- Add Select2 CSS and JS -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
         rel="stylesheet" />
-  <!-- Add Select2 JS -->
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-6">
         <div class="card">
           <div class="card-header text-center">
-            <h3 class="mb-0">{{ form.instance.order_name|default_if_none:"New" }} Order</h3>
+            <h3 class="mb-0">{{ form.instance.name|default_if_none:"New" }} Order</h3>
           </div>
           <div class="card-body">
             <form method="post">
@@ -37,6 +49,13 @@
     </div>
   </div>
   <script>
+    $(function() {
+      // Initialize the datepicker
+      $('.vDateField').datetimepicker({
+          dateFormat: "yy-mm-dd",
+          timeFormat: "HH:mm"
+      });
+  });
     $.ajaxSetup({
       beforeSend: function(xhr, settings) {
           if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {

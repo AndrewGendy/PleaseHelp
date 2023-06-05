@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.db.models import F
 
 
 # start of order model
@@ -43,30 +44,30 @@ class OrderDifficulty(models.Model):
 
 class Order(models.Model):
     # Use help_text to provide a description or guidance for the model field
-    order_name = models.CharField(max_length=100, help_text="The name of the order")
+    name = models.CharField(max_length=100, help_text="The name of the order")
     description = models.TextField(help_text="The description of the order")
-    order_difficulty = models.ForeignKey(OrderDifficulty, on_delete=models.PROTECT, related_name="order_difficulties", help_text="The difficulty level of the order")
+    difficulty = models.ForeignKey(OrderDifficulty, on_delete=models.PROTECT, related_name="difficulties", help_text="The difficulty level of the order")
     address = models.CharField(max_length=200, help_text="The address where the order will be delivered or performed")
-    order_type = models.ForeignKey(OrderType, on_delete=models.PROTECT, related_name="order_types", help_text="The type of the order")
+    type = models.ForeignKey(OrderType, on_delete=models.PROTECT, related_name="types", help_text="The type of the order")
     location = models.CharField(max_length=200, blank=True, help_text="The location of the order")
     client = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, related_name="client_orders", help_text="The user who created the order")
     vendor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="vendor_orders", help_text="The user who accepted the order")
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
-    special_requests = models.TextField(blank=True, default="None", help_text="Any special requests from the client")
-    additional_info = models.TextField(blank=True, default="None", help_text="Any additional information from the client")
-    prefered_complete_date = models.DateTimeField(null=True, blank=True, help_text="The preferred date for completing the order")
-    order_status = models.ForeignKey(OrderStatus, default=10, on_delete=models.PROTECT, related_name="order_status", help_text="The current status of the order")
+    special_requests = models.TextField(blank=True, help_text="Any special requests from the client")
+    additional_info = models.TextField(blank=True, help_text="Any additional information about the order")
+    preferred_complete_date = models.DateTimeField(null=True, blank=True, help_text="The preferred date for the order to be completed by")
+    status = models.ForeignKey(OrderStatus, default=10, on_delete=models.PROTECT, related_name="statuses", help_text="The current status of the order")
     client_price = models.DecimalField(max_digits=6, decimal_places=2, null=True, help_text="The price that the client is willing to pay")
     vendor_price = models.DecimalField(max_digits=6, decimal_places=2, null=True, help_text="The price that the vendor is asking for")
 
     class Meta:
-        ordering = ["-updated_date", "-created_date"]
+        ordering = ordering = [F("preferred_complete_date").asc(nulls_last=True), "-updated_date", "-created_date"]
         verbose_name = "Order"
         verbose_name_plural = "Orders"
 
     def __str__(self):
-        return self.order_name
+        return self.name
 
 
 # start of picture model
@@ -83,4 +84,4 @@ class Picture(models.Model):
         verbose_name_plural = "Pictures"
 
     def __str__(self):
-        return f"{self.description or ''} - Order# {self.order.pk} - Order Name: {self.order.order_name}"
+        return f"{self.description or ''} - Order# {self.order.pk} - Order Name: {self.order.name}"

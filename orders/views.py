@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 from decimal import Decimal
 from dal import autocomplete
 from feedback.models import Feedback
@@ -51,6 +52,8 @@ class OrderListView(LoginRequiredMixin, ListView):
                 queryset = queryset.filter(client=self.request.user)
             elif self.request.user.is_vendor():
                 queryset = queryset.filter(Q(vendor=self.request.user) | Q(client=self.request.user) | Q(status=OrderStatus.objects.get(name="Listed")))
+        # Using select_related to fetch the foreign key fields in one query
+        queryset = queryset.select_related("difficulty", "type", "client", "vendor", "status")
         return queryset
 
 
@@ -59,11 +62,16 @@ class OrderDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     template_name = "orders/order_detail.html"
     context_object_name = "order"
 
+    def get_queryset(self):
+        # Use select_related to fetch the foreign key fields in one query
+        return super().get_queryset().select_related("difficulty", "type", "client", "vendor", "status")
+
     def test_func(self):
-        order = self.get_object()
+        # Store the order object in a variable
+        self.order = self.get_object()
         user = self.request.user
         # Check if the user is the client or the vendor of the order
-        return user == order.client or user == order.vendor or user.user_type.pk >= 30 or (order.status.pk == 40 and user.user_type.pk >= 20)
+        return user == self.order.client or user == self.order.vendor or user.user_type.pk >= 30 or (self.order.status.pk == 40 and user.user_type.pk >= 20)
 
     def handle_no_permission(self):
         # Redirect to the error_page if the test fails
@@ -71,7 +79,8 @@ class OrderDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        order = self.get_object()
+        # Use the order object from the variable
+        order = self.order
 
         feedbacks = Feedback.objects.filter(order=self.object, reviewer=self.request.user)
         context["feedback_submitted"] = feedbacks.exists()
@@ -89,10 +98,11 @@ class OrderDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return context
 
 
-class OrderCreateView(CreateView):
+class OrderCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Order
     form_class = OrderForm
     template_name = "orders/order_form.html"
+    success_message = "Order Created Successfully!"
 
     def form_valid(self, form):
         form.instance.client = self.request.user
@@ -107,10 +117,11 @@ class OrderCreateView(CreateView):
         return kwargs
 
 
-class OrderUpdateView(LoginRequiredMixin, UpdateView):
+class OrderUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Order
     form_class = OrderForm
     template_name = "orders/order_form.html"
+    success_message = "Order Updated Successfully!"
 
     def form_valid(self, form):
         order = form.instance
@@ -137,7 +148,7 @@ class OrderUpdateView(LoginRequiredMixin, UpdateView):
         return kwargs
 
 
-class OrderDeleteView(LoginRequiredMixin, DeleteView):
+class OrderDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Order
 
 
@@ -149,6 +160,7 @@ class ClientAcceptPriceView(LoginRequiredMixin, View):
         if request.user.is_client and order.status == priced_status_id and request.user == order.client:
             order.status = accepted_by_client_status_id
             order.save()
+            messages.success(request, "Price Accepted!")
         return redirect(ORDER_DETAIL_PAGE, pk=kwargs["pk"])
 
 
@@ -161,11 +173,23 @@ class VendorAcceptOrderView(LoginRequiredMixin, View):
             order.vendor = request.user
             order.status = accepted_by_vendor_status_id
             order.save()
+            messages.success(request, "Order Accepted!")
+        return redirect(ORDER_DETAIL_PAGE, pk=kwargs["pk"])
+
+
+class VendorCompleteOrderView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        order = get_object_or_404(Order, pk=kwargs["pk"])
+        if request.user.is_vendor and request.user == order.vendor and order.status.pk == 50:
+            order.status = OrderStatus.objects.get(name="Order Complete")
+            order.save()
+            messages.success(request, "Order Completed Successfully! Your payment will be processed shortly.")
         return redirect(ORDER_DETAIL_PAGE, pk=kwargs["pk"])
 
 
 # Custom view for updating the price of an order
-class OrderUpdatePriceView(LoginRequiredMixin, UpdateView):
+class OrderUpdatePriceView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    success_message = "Price Updated Successfully!"
     model = Order
     form_class = OrderForm
     template_name = "orders/order_form.html"
@@ -177,10 +201,10 @@ class OrderUpdatePriceView(LoginRequiredMixin, UpdateView):
         return super(OrderUpdatePriceView, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
-        # Pass the user and order_status to the form
+        # Pass the user and order status to the form
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
-        kwargs["order_status"] = self.object.status
+        kwargs["status"] = self.object.status
         return kwargs
 
     # Override the post method to update the order status directly

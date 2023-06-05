@@ -1,0 +1,15 @@
+.form-control-smaller {
+    /* this affects the input box for adding/updating the price */
+    width: 80%;
+    /* Adjust the width as needed */
+    padding: 6px 12px;
+    /* Adjust the padding as needed */
+    font-size: 14px;
+    /* Adjust the font size as needed */
+}
+
+.centered-title {
+    /* this affects the title in the confirmModal */
+    text-align: center;
+    width: 100%;
+}

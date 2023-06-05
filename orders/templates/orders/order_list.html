@@ -7,11 +7,16 @@
                     <div class="card">
                         <div class="card-body">
                             <h3 class="card-title">
-                                <a href="{% url 'orders:order-detail' order.id %}">{{ order.order_name }}</a>
+                                <a href="{% url 'orders:order-detail' order.id %}">{{ order.name }}</a>
                             </h3>
                             <p class="card-text">{{ order.description|truncatechars:50 }}</p>
-                            <p class="card-text">Status: {{ order.order_status }}</p>
-                            <p class="card-text">Type: {{ order.order_type }}</p>
+                            <p class="card-text">Status: {{ order.status }}</p>
+                            <p class="card-text">Type: {{ order.type }}</p>
+                            {% if order.preferred_complete_date %}
+                                <p class="card-text">
+                                    Preferred Complete Date: <b><u>{{ order.preferred_complete_date|date:"M d, Y: h:i A" }}</b></u>
+                                </p>
+                            {% endif %}
                             <p class="card-subtitle mb-2 text-muted">{{ order.updated_date|date:"M d, Y: h:i A" }}</p>
                         </div>
                     </div>

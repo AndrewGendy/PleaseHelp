@@ -1,23 +1,22 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from .models import Feedback
 from orders.models import Order
 from .forms import FeedbackForm
 
-from django.core.exceptions import PermissionDenied
 
-
-class FeedbackCreateView(CreateView):
+class FeedbackCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Feedback
     form_class = FeedbackForm
     template_name = "feedback/feedback_form.html"
+    success_message = "Feedback Submitted Successfully!"
 
     def dispatch(self, request, *args, **kwargs):
         order = get_object_or_404(Order, id=kwargs["order_pk"])
-        if request.user not in [order.client, order.vendor]:
-            raise PermissionDenied  # returns a 403 response
+        if request.user not in [order.client, order.vendor] or order.status.pk < 60:
+            return redirect("error_page")  # or whatever page we want to redirect non-staff members to
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -42,6 +41,4 @@ class FeedbackListView(LoginRequiredMixin, ListView):
     context_object_name = "feedbacks"
 
     def get_queryset(self):
-        return Feedback.objects.filter(reviewed=self.request.user).order_by(
-            "-created_at"
-        )
+        return Feedback.objects.filter(reviewed=self.request.user).order_by("-created_at")
