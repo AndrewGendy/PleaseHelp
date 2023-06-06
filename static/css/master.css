@@ -1,0 +1,44 @@
+/* Define some custom properties for the colors */
+:root {
+    --dropdown-bg-light: #f8f9fa;
+    --dropdown-bg-dark: #545d66;
+    --dropdown-text-light: #212529;
+    --dropdown-text-dark: #f8f9fa;
+    --dropdown-hover-bg-light: #e9ecef;
+    --dropdown-hover-bg-dark: #7d8996;
+}
+
+/* Style the dropdown menu when the theme is light */
+[data-bs-theme="light"] #theme-dropdown {
+    background-color: var(--dropdown-bg-light);
+    color: var(--dropdown-text-light);
+}
+
+/* Style the dropdown menu when the theme is dark */
+[data-bs-theme="dark"] #theme-dropdown {
+    background-color: var(--dropdown-bg-dark);
+    color: var(--dropdown-text-dark);
+}
+
+#theme-dropdown {
+    padding: 0 0.5rem;
+}
+
+
+/* Style the dropdown menu items when hovered */
+#theme-dropdown li:hover {
+    background-color: var(--dropdown-hover-bg-light);
+}
+
+[data-bs-theme="dark"] #theme-dropdown li:hover {
+    background-color: var(--dropdown-hover-bg-dark);
+}
+
+/* Style the dropdown menu items when selected */
+#theme-dropdown li.active {
+    background-color: var(--dropdown-hover-bg-light);
+}
+
+[data-bs-theme="dark"] #theme-dropdown li.active {
+    background-color: var(--dropdown-hover-bg-dark);
+}

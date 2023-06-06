@@ -188,7 +188,7 @@
           {% if order.status.pk <= 40 and user == order.client %}
             <div>
               <a href="{% url "orders:order-update" order.id %}"
-                 class="btn btn-dark mt-2">{% trans "Update Order Information" %}</a>
+                 class="btn btn-secondary mt-2">{% trans "Update Order Information" %}</a>
             </div>
             {% comment %} Accept Order with confirm Modal from Bootstrap {% endcomment %}
           {% elif request.user.is_vendor and order.status.pk == 40 %}
@@ -230,7 +230,7 @@
           <!-- Complete order -->
           {% if request.user.is_vendor and order.status.pk == 50 %}
             <button type="button"
-                    class="btn btn-primary"
+                    class="btn btn-success"
                     data-bs-toggle="modal"
                     data-bs-target="#confirmModal">{% trans "Mark Order as Completed" %}</button>
             <div class="modal fade"

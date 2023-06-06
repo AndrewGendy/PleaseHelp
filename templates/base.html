@@ -11,26 +11,15 @@
         <!-- link to bootstrap css -->
         <link rel="stylesheet"
               href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <!-- link to bootstrap dark css -->
-        <link rel="stylesheet"
-              href="https://bootstrap.darktheme.dev/css/bootstrap-dark.min.css">
-        <!-- Font Awesome -->
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <!-- JavaScript Bundle with Popper -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <!-- link to jquery and bootstrap js -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.1/js/bootstrap.bundle.min.js"></script>
         <!-- link to custom js for dark mode switcher -->
         <script src="{% static "js/dark-mode.js" %}"></script>
         <link rel="stylesheet" href="{% static "css/master.css" %}">
-        <!-- Add custom CSS to enable hover effect on dropdown -->
-        <style>
-        .dropdown:hover>.dropdown-menu {
-            display: block;
-        }
-        </style>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg mb-4">
@@ -89,10 +78,6 @@
                                     <i class="fas fa-comments"></i>
                                 </a>
                             </li>
-                            <li class="nav-item form-check form-switch ">
-                                <input class="form-check-input" type="checkbox" id="dark-mode-switch">
-                                <label class="form-check-label" for="dark-mode-switch">Dark mode</label>
-                            </li>
                             <li class="nav-item mx-3 text-center">
                                 <a href="{% url "accounts:profile" request.user.username %}">
                                     <img src="{{ request.user.avatar }}"
@@ -108,6 +93,36 @@
                                    href="{% url "accounts:logout" %}">Logout</a>
                             </li>
                         {% endif %}
+                        <!-- Dark theme toggle -->
+                        <li class="nav-item dropdown me-5">
+                            <!-- Icon that changes according to the current theme -->
+                            <i id="theme-icon" data-bs-toggle="dropdown"><i class="fas fa-caret-down mx-1"></i></i>
+                            <!-- Dropdown menu with light and dark options -->
+                            <ul id="theme-dropdown"
+                                class="dropdown-menu dropdown-menu-end p-0 border-0 shadow-sm rounded-0 w-auto mt-2 py-2 text-center">
+                                <!-- Light option -->
+                                <li data-bs-theme="light">
+                                    <div id="light-option"
+                                         role="button"
+                                         tabindex="0"
+                                         aria-label="Light mode option"
+                                         class="active">
+                                        <i class="fas fa-sun"></i>
+                                        <span class="ms-2">Light Theme</span>
+                                    </div>
+                                </li>
+                                <!-- Dark option -->
+                                <li data-bs-theme="dark">
+                                    <div id="dark-option"
+                                         role="button"
+                                         tabindex="0"
+                                         aria-label="Dark mode option">
+                                        <i class="fas fa-moon"></i>
+                                        <span class="ms-2">Dark Theme</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
