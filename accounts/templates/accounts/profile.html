@@ -1,62 +1,75 @@
-{% extends 'base.html' %}
-{%block content%}
-
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white text-center">
-                    {% if user == profile %}
-                    <h1>Your Profile</h1>
-                    {% else %}
-                    <h1>{{ profile.username }}'s Profile</h1>
-                    {% endif %}
-                </div>
-                <div class="card-body">
-                    <div class="text-center mb-2">
-                        <img src="{{ profile.avatar }}" class="rounded-circle" alt="profile Avatar" width="150" height="150">
-                    </div>
-                    <h2 class="text-center mb-5">@{{ profile.username }}</h2>
-                    <p class="text-center"><strong>First Name:</strong> {{ profile.first_name }}</p>
-                    <p class="text-center"><strong>Last Name:</strong> {{ profile.last_name }}</p>
-                    <p class="text-center"><strong>Email:</strong> {{ profile.email }}</p>
-                    <p class="text-center"><strong>Phone:</strong> {{ profile.phone }}</p>
-                    <p class="text-center"><strong>User Type:</strong> {{ profile.user_type }}</p>
-                    <div class="text-center">
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white text-center">
                         {% if user == profile %}
-                            <a href="{% url 'feedback:feedback_list' %}">
-                                <strong>Rating</a>:</strong>
-                            
+                            <h1>Your Profile</h1>
                         {% else %}
-                            <strong>Rating:</strong>
+                            <h1>{{ profile.username }}'s Profile</h1>
                         {% endif %}
-                         {{ profile.rating }}
-                        <i class="fas fa-star text-warning"></i>
                     </div>
-                    <hr>
-                    <div class="d-flex justify-content-between align-items-center px-5">
-                        <div class="card-text">
-                            <small class="text-muted mx-1">
-                                <strong>Last Login: </strong>
-                                <span style="white-space: nowrap;">{{ profile.last_login|date:"M d, Y" }}</span>
-                            </small>
+                    <div class="card-body">
+                        <div class="text-center mb-2">
+                            <img src="{{ profile.avatar }}"
+                                 class="rounded-circle"
+                                 alt="profile Avatar"
+                                 width="150"
+                                 height="150"
+                                 style="object-fit: cover">
                         </div>
-                        <div class="card-text">
-                            <small class="text-muted mx-1">
-                                <strong>Date Joined: </strong>
-                                <span style="white-space: nowrap;">{{ profile.date_joined|date:"M d, Y" }}</span>
-                            </small>
+                        <h2 class="text-center mb-5">@{{ profile.username }}</h2>
+                        <p class="text-center">
+                            <strong>First Name:</strong> {{ profile.first_name }}
+                        </p>
+                        <p class="text-center">
+                            <strong>Last Name:</strong> {{ profile.last_name }}
+                        </p>
+                        <p class="text-center">
+                            <strong>Email:</strong> {{ profile.email }}
+                        </p>
+                        <p class="text-center">
+                            <strong>Phone:</strong> {{ profile.phone }}
+                        </p>
+                        <p class="text-center">
+                            <strong>User Type:</strong> {{ profile.user_type }}
+                        </p>
+                        <div class="text-center">
+                            {% if user == profile %}
+                                <a href="{% url 'feedback:feedback_list' %}">
+                                    <strong>Rating</a>:</strong>
+                                {% else %}
+                                    <strong>Rating:</strong>
+                                {% endif %}
+                                {{ profile.rating }}
+                                <i class="fas fa-star text-warning"></i>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center px-5">
+                                <div class="card-text">
+                                    <small class="text-muted mx-1">
+                                        <strong>Last Login:</strong>
+                                        <span style="white-space: nowrap;">{{ profile.last_login|date:"M d, Y" }}</span>
+                                    </small>
+                                </div>
+                                <div class="card-text">
+                                    <small class="text-muted mx-1">
+                                        <strong>Date Joined:</strong>
+                                        <span style="white-space: nowrap;">{{ profile.date_joined|date:"M d, Y" }}</span>
+                                    </small>
+                                </div>
+                            </div>
+                            {% if user == profile %}
+                                <div class="mb-3 text-center">
+                                    <a href="{% url 'accounts:profile-update' profile.username %}"
+                                       class="btn btn-dark mt-2">Update Profile</a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-                    {% if user == profile %}
-                    <div class="mb-3 text-center">
-                        <a href="{% url 'accounts:profile-update' profile.username %}" class="btn btn-dark mt-2">Update Profile</a>
-                    {% endif %}
-                    </div>    
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-{%endblock%}
+    {% endblock content %}
