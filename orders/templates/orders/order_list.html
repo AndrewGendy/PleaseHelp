@@ -13,7 +13,7 @@
                             <p class="card-text">Status: {{ order.status }}</p>
                             <p class="card-text">Type: {{ order.type }}</p>
                             <p class="card-text">
-                                Preferred Complete Date: <b><u>{{ order.preferred_complete_date|date:"M d, Y: h:i A"|default:"None" }}</b></u>
+                                Preferred Complete Date: <b><u>{{ order.preferred_complete_date|date:"M d, Y: h:i A"|default:"None" }}</u></b>
                             </p>
                             <p class="card-subtitle mb-2 text-muted">{{ order.updated_date|date:"M d, Y: h:i A" }}</p>
                         </div>

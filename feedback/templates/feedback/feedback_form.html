@@ -48,42 +48,42 @@
     </div>
   </div>
   <style>
-  .fas.fa-star {
-    color: goldenrod;
+.fas.fa-star {
+color: goldenrod;
 }
 .far.fa-star {
-    color: grey;
+color: grey;
 }
   </style>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
 $(document).ready(function() {
-    //console.log('Document ready');
+//console.log('Document ready');
 
-    $('#star-rating i').on('click', function() {
-        var rating = $(this).data('rating');
-        //console.log('Rating clicked:', rating);
-        $('#rating').val(rating);
-        $('#star-rating i').each(function() {
-            if ($(this).data('rating') <= rating) {
-                $(this).removeClass('far').addClass('fas');
-            } else {
-                $(this).removeClass('fas').addClass('far');
-            }
-        });
-    });
+$('#star-rating i').on('click', function() {
+var rating = $(this).data('rating');
+//console.log('Rating clicked:', rating);
+$('#rating').val(rating);
+$('#star-rating i').each(function() {
+if ($(this).data('rating') <= rating) {
+$(this).removeClass('far').addClass('fas');
+} else {
+$(this).removeClass('fas').addClass('far');
+}
+});
+});
 
-    $('#feedback-form').on('submit', function(e) {
-        //console.log('Form submitted');
-        if ($('#rating').val() === '') {
-            console.log('No rating selected');
-            $('#rating-error').show();
-            e.preventDefault();
-        } else {
-            //console.log('Rating selected:', $('#rating').val());
-            $('#rating-error').hide();
-        }
-    });
+$('#feedback-form').on('submit', function(e) {
+//console.log('Form submitted');
+if ($('#rating').val() === '') {
+console.log('No rating selected');
+$('#rating-error').show();
+e.preventDefault();
+} else {
+//console.log('Rating selected:', $('#rating').val());
+$('#rating-error').hide();
+}
+});
 });
   </script>
 {% endblock content %}

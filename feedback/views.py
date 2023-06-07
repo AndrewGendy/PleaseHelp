@@ -7,7 +7,7 @@ from orders.models import Order
 from .forms import FeedbackForm
 
 
-class FeedbackCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class FeedbackCreateView(LoginRequiredMixin, CreateView):
     model = Feedback
     form_class = FeedbackForm
     template_name = "feedback/feedback_form.html"

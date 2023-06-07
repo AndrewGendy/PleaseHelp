@@ -218,16 +218,18 @@ class OrderUpdatePriceView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             client_price = request.POST.get("client_price")
             if client_price is not None and Decimal(client_price) >= 10:
                 order.client_price = client_price
+                messages.success(request, "Client's Price added correctly.")
             else:
-                messages.error(request, "Client price must be a decimal greater than or equal to 10.")
+                messages.error(request, "Client price must be greater than or equal to 10.")
                 return redirect(ORDER_DETAIL_PAGE, pk=kwargs["pk"])
         elif order.status.pk >= 30 and order.status.pk < 50:
             order.status = OrderStatus.objects.get(name="Listed")
             vendor_price = request.POST.get("vendor_price")
             if vendor_price is not None and Decimal(vendor_price) >= 10:
                 order.vendor_price = vendor_price
+                messages.success(request, "Vendor's Price added correctly.")
             else:
-                messages.error(request, "Vendor price must be a decimal greater than or equal to 10.")
+                messages.error(request, "Vendor price must be greater than or equal to 10.")
                 return redirect(ORDER_DETAIL_PAGE, pk=kwargs["pk"])
 
         order.save()
